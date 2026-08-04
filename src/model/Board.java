@@ -4,6 +4,7 @@ public class Board {
     private Piece[][] board;
     public Board() {
         board = new Piece[8][8];
+        initializeBoard();
     }
 
     public boolean isInsideBoard(int row, int col) {
@@ -24,29 +25,29 @@ public class Board {
 
     public void initializeBoard() {
         // Black pieces
-        setPiece(0, 0, new Rook(Piece.Color.BLACK));
-        setPiece(0, 1, new Knight(Piece.Color.BLACK));
-        setPiece(0, 2, new Bishop(Piece.Color.BLACK));
-        setPiece(0, 3, new Queen(Piece.Color.BLACK));
-        setPiece(0, 4, new King(Piece.Color.BLACK));
-        setPiece(0, 5, new Bishop(Piece.Color.BLACK));
-        setPiece(0, 6, new Knight(Piece.Color.BLACK));
-        setPiece(0, 7, new Rook(Piece.Color.BLACK));
+        setPiece(0, 0, new Rook(Color.BLACK));
+        setPiece(0, 1, new Knight(Color.BLACK));
+        setPiece(0, 2, new Bishop(Color.BLACK));
+        setPiece(0, 3, new Queen(Color.BLACK));
+        setPiece(0, 4, new King(Color.BLACK));
+        setPiece(0, 5, new Bishop(Color.BLACK));
+        setPiece(0, 6, new Knight(Color.BLACK));
+        setPiece(0, 7, new Rook(Color.BLACK));
 
         // White pieces
-        setPiece(7, 0, new Rook(Piece.Color.WHITE));
-        setPiece(7, 1, new Knight(Piece.Color.WHITE));
-        setPiece(7, 2, new Bishop(Piece.Color.WHITE));
-        setPiece(7, 3, new Queen(Piece.Color.WHITE));
-        setPiece(7, 4, new King(Piece.Color.WHITE));
-        setPiece(7, 5, new Bishop(Piece.Color.WHITE));
-        setPiece(7, 6, new Knight(Piece.Color.WHITE));
-        setPiece(7, 7, new Rook(Piece.Color.WHITE));
+        setPiece(7, 0, new Rook(Color.WHITE));
+        setPiece(7, 1, new Knight(Color.WHITE));
+        setPiece(7, 2, new Bishop(Color.WHITE));
+        setPiece(7, 3, new Queen(Color.WHITE));
+        setPiece(7, 4, new King(Color.WHITE));
+        setPiece(7, 5, new Bishop(Color.WHITE));
+        setPiece(7, 6, new Knight(Color.WHITE));
+        setPiece(7, 7, new Rook(Color.WHITE));
 
         // Loop to set pawns
         for (int col = 0; col < 8; col++) {
-            setPiece(1, col, new Pawn(Piece.Color.BLACK));
-            setPiece(6, col, new Pawn(Piece.Color.WHITE));
+            setPiece(1, col, new Pawn(Color.BLACK));
+            setPiece(6, col, new Pawn(Color.WHITE));
         }
     }
 }
