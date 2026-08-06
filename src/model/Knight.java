@@ -18,9 +18,7 @@ public class Knight extends Piece {
             int newCol = col + direction[1];
             if (board.isInsideBoard(newRow, newCol)) {
                 Piece piece = board.getPiece(newRow, newCol);
-                if (piece == null) {
-                    legalMoves.add(new Move(row, col, newRow, newCol));
-                } else if (piece.getColor() != getColor()) {
+                if (piece == null || piece.getColor() != getColor()) {
                     legalMoves.add(new Move(row, col, newRow, newCol));
                 }
             }
