@@ -88,6 +88,35 @@ public class Game {
         return false;
     }
 
+    private boolean isCheckmate(Color color) {
+        if (!isKingInCheck(color)) return false;
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece currentPiece = board.getPiece(row, col);
+                if (currentPiece == null || currentPiece.getColor() != color) continue;
+                List<Move> legalMoves = currentPiece.getLegalMoves(board, row, col);
+                for (Move move : legalMoves) {
+                    int fromRow = move.getFromRow();
+                    int fromCol = move.getFromCol();
+                    int toRow = move.getToRow();
+                    int toCol = move.getToCol();
+                    Piece capturedPiece = board.getPiece(toRow, toCol);
+                    // Temp move
+                    movePiece(fromRow, fromCol, toRow, toCol, currentPiece);
+                    boolean isStillInCheck = isKingInCheck(color);
+
+                    // Undo the move
+                    movePiece(toRow, toCol, fromRow, fromCol, currentPiece);
+                    board.setPiece(toRow, toCol, capturedPiece);
+
+                    // If the king escaped check, it is NOT checkmate
+                    if (!isStillInCheck) return false;
+                }
+            }
+        }
+        return true;
+    }
+
     // Getters
     public Board getBoard() { return board; }
     public Color getCurrentTurn() { return currentTurn; }
