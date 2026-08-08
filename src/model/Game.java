@@ -23,10 +23,12 @@ public class Game {
         List<Move> legalMoves = piece.getLegalMoves(board, fromRow, fromCol);
         for (Move m : legalMoves) {
             if (move.equals(m)) {
+                boolean movementStatus = piece.hasMoved();
                 movePiece(fromRow, fromCol, toRow, toCol, piece);
                 if (isKingInCheck(currentTurn)) {
                     movePiece(toRow, toCol, fromRow, fromCol, piece);
                     board.setPiece(toRow, toCol, capturedPiece);
+                    piece.setHasMoved(movementStatus);
                     return false;
                 }
                 switchTurn();
@@ -37,6 +39,12 @@ public class Game {
     }
 
     private void movePiece(int fromRow, int fromCol, int toRow, int toCol, Piece piece) {
+        board.removePiece(fromRow, fromCol);
+        board.setPiece(toRow, toCol, piece);
+        piece.setHasMoved(true);
+    }
+
+    private void temporaryMove(int fromRow, int fromCol, int toRow, int toCol, Piece piece) {
         board.removePiece(fromRow, fromCol);
         board.setPiece(toRow, toCol, piece);
     }
@@ -102,11 +110,11 @@ public class Game {
                     Piece capturedPiece = board.getPiece(toRow, toCol);
 
                     // Temp move
-                    movePiece(fromRow, fromCol, toRow, toCol, currentPiece);
+                    temporaryMove(fromRow, fromCol, toRow, toCol, currentPiece);
                     boolean isStillInCheck = isKingInCheck(color);
 
                     // Undo the move
-                    movePiece(toRow, toCol, fromRow, fromCol, currentPiece);
+                    temporaryMove(toRow, toCol, fromRow, fromCol, currentPiece);
                     board.setPiece(toRow, toCol, capturedPiece);
 
                     if (!isStillInCheck) return true;
@@ -131,6 +139,68 @@ public class Game {
             case 'B' -> board.setPiece(row, col, new Bishop(color));
             case 'N' -> board.setPiece(row, col, new Knight(color));
         }
+    }
+
+    private boolean isKingSideCastlePossible(Color color) {
+        int row = (color == Color.WHITE) ? 7 : 0;
+        Piece king = board.getPiece(row, 4);
+        Piece rook = board.getPiece(row, 7);
+        if (!(king instanceof King) || !(rook instanceof Rook) || king.hasMoved() || rook.hasMoved()) return false;
+        if (board.getPiece(row, 5) != null || board.getPiece(row, 6) != null) return false; // There is no piece b/w king and rook
+        if (isKingInCheck(color)) return false;
+
+        // Make sure king doesn't move through check
+        // Temporarily move king to f1/f8
+        temporaryMove(row, 4, row, 5, king);
+
+        boolean passesThroughCheck = isKingInCheck(color);
+
+        // Undo
+        temporaryMove(row, 5, row, 4, king);
+
+        if (passesThroughCheck) return false;
+
+        // Make sure king doesn't move into check position
+        // Temporarily move king to g1/g8
+        temporaryMove(row, 4, row, 6, king);
+
+        boolean endsInCheck = isKingInCheck(color);
+
+        // Undo
+        temporaryMove(row, 6, row, 4, king);
+        return !endsInCheck;
+    }
+
+    private boolean isQueenSideCastlePossible(Color color) {
+        int row = (color == Color.WHITE) ? 7 : 0;
+        Piece king = board.getPiece(row, 4);
+        Piece rook = board.getPiece(row, 0);
+        if (!(king instanceof King) || !(rook instanceof Rook) || king.hasMoved() || rook.hasMoved()) return false;
+        if (board.getPiece(row, 1) != null || board.getPiece(row, 2) != null ||
+                board.getPiece(row, 3) != null) return false; // There is no piece b/w king and rook
+
+        if (isKingInCheck(color)) return false;
+
+        // Make sure king doesn't move through check
+        // Temporarily move king to d1/d8
+        temporaryMove(row, 4, row, 3, king);
+
+        boolean passesThroughCheck = isKingInCheck(color);
+
+        // Undo
+        temporaryMove(row, 3, row, 4, king);
+
+        if (passesThroughCheck) return false;
+
+        // Make sure king doesn't move into check position
+        // Temporarily move king to c1/c8
+        temporaryMove(row, 4, row, 2, king);
+
+        boolean endsInCheck = isKingInCheck(color);
+
+        // Undo
+        temporaryMove(row, 2, row, 4, king);
+        return !endsInCheck;
     }
 
     // Getters
