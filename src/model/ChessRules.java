@@ -150,4 +150,28 @@ public class ChessRules {
         temporaryMove(row, 2, row, 4, king);
         return !endsInCheck;
     }
+
+    public boolean isEnPassantPossible(Color color, int fromRow, int fromCol, int toRow, int toCol, Move lastMove) {
+        if (lastMove == null) return false;
+        Piece pawn = board.getPiece(fromRow, fromCol);
+        if (!(pawn instanceof Pawn) || pawn.getColor() != color) return false;
+
+        // Pawn must move diagonally by one square
+        if (Math.abs(toCol - fromCol) != 1) return false;
+
+        int direction = (color == Color.WHITE) ? -1 : 1;
+        if (toRow - fromRow != direction) return false;
+
+        // Destination must be empty
+        if (board.getPiece(toRow, toCol) != null) return false;
+
+        // Check if pawn is beside the current pawn
+        Piece enemyPawn = board.getPiece(fromRow, toCol);
+        if (!(enemyPawn instanceof Pawn) || enemyPawn.getColor() == color) return false;
+
+        // The enemy pawn must have just moved
+        if (lastMove.getFromRow() != fromRow || lastMove.getToRow() != toRow) return false;
+
+        return Math.abs(lastMove.getFromRow() - lastMove.getToRow()) == 2;
+    }
 }
