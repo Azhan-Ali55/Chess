@@ -88,8 +88,7 @@ public class Game {
         return false;
     }
 
-    private boolean isCheckmate(Color color) {
-        if (!isKingInCheck(color)) return false;
+    private boolean hasLegalMove(Color color) {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 Piece currentPiece = board.getPiece(row, col);
@@ -101,6 +100,7 @@ public class Game {
                     int toRow = move.getToRow();
                     int toCol = move.getToCol();
                     Piece capturedPiece = board.getPiece(toRow, toCol);
+
                     // Temp move
                     movePiece(fromRow, fromCol, toRow, toCol, currentPiece);
                     boolean isStillInCheck = isKingInCheck(color);
@@ -109,12 +109,28 @@ public class Game {
                     movePiece(toRow, toCol, fromRow, fromCol, currentPiece);
                     board.setPiece(toRow, toCol, capturedPiece);
 
-                    // If the king escaped check, it is NOT checkmate
-                    if (!isStillInCheck) return false;
+                    if (!isStillInCheck) return true;
                 }
             }
         }
-        return true;
+        return false;
+    }
+
+    private boolean isCheckmate(Color color) {
+        return isKingInCheck(color) && !hasLegalMove(color);
+    }
+
+    private boolean isStalemate(Color color) {
+        return !isKingInCheck(color) && !hasLegalMove(color);
+    }
+
+    private void promotePawn(int row, int col, Color color, char choice) {
+        switch (choice) {
+            case 'Q' -> board.setPiece(row, col, new Queen(color));
+            case 'R' -> board.setPiece(row, col, new Rook(color));
+            case 'B' -> board.setPiece(row, col, new Bishop(color));
+            case 'N' -> board.setPiece(row, col, new Knight(color));
+        }
     }
 
     // Getters
