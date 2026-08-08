@@ -18,4 +18,17 @@ public class Move {
     public int getFromCol() { return fromCol; }
     public int getToRow() { return toRow; }
     public int getToCol() { return toCol; }
+
+    // equals method
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (!(obj instanceof Move)) {
+            return false;
+        }
+        Move move = (Move) obj;
+        return getFromRow() == move.getFromRow() && getFromCol() == move.getFromCol() && getToRow() == move.getToRow() && getToCol() == move.getToCol();
+    }
 }
