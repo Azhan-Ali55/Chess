@@ -1,5 +1,6 @@
 package ui;
 
+import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -40,6 +41,19 @@ public class SquareView extends StackPane {
         moveDot.setMouseTransparent(true);
 
         getChildren().addAll(highlightOverlay, moveDot);
+    }
+
+    public void highlightCapture() {
+        clearHighlight();
+
+        Circle ring = new Circle(38);
+        ring.setFill(Color.TRANSPARENT);
+        ring.setStroke(Color.rgb(50, 50, 50, 0.45));
+        ring.setStrokeWidth(7);
+        ring.setMouseTransparent(true);
+        StackPane.setAlignment(ring, Pos.CENTER);
+
+        getChildren().add(ring);
     }
 
     public void clearHighlight() {

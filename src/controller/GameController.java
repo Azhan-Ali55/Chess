@@ -48,7 +48,14 @@ public class GameController {
             Piece piece = game.getBoard().getPiece(row, col);
 
             for (Move move : piece.getLegalMoves(game.getBoard(), row, col)) {
-                boardView.highlightSquare(move.getToRow(), move.getToCol());
+                int targetRow = move.getToRow();
+                int targetCol = move.getToCol();
+
+                if (game.getBoard().getPiece(targetRow, targetCol) != null) {
+                    boardView.highlightCapture(targetRow, targetCol);
+                } else {
+                    boardView.highlightSquare(targetRow, targetCol);
+                }
             }
             System.out.println("Selected: " + row + ", " + col);
             return;
