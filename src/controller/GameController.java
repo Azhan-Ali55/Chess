@@ -2,6 +2,7 @@ package controller;
 
 import model.Game;
 import model.Move;
+import model.Piece;
 import ui.ChessBoardView;
 
 public class GameController {
@@ -44,17 +45,17 @@ public class GameController {
 
             selectedRow = row;
             selectedCol = col;
+            Piece piece = game.getBoard().getPiece(row, col);
+
+            for (Move move : piece.getLegalMoves(game.getBoard(), row, col)) {
+                boardView.highlightSquare(move.getToRow(), move.getToCol());
+            }
             System.out.println("Selected: " + row + ", " + col);
             return;
         }
 
         // Second click: attempt the move
-        Move move = new Move(
-                selectedRow,
-                selectedCol,
-                row,
-                col
-        );
+        Move move = new Move(selectedRow, selectedCol, row, col);
 
         boolean successful = game.makeMove(move);
 
@@ -63,8 +64,10 @@ public class GameController {
             refreshBoard();
         } else {
             System.out.println("Illegal move");
+            boardView.getSquare(row, col).showIllegalMove();
         }
 
+        boardView.clearHighlights();
         // Clear selection
         selectedRow = -1;
         selectedCol = -1;

@@ -54,4 +54,16 @@ public class ChessBoardView extends GridPane {
             }
         }
     }
+
+    public void highlightSquare(int row, int col) {
+        squares[row][col].highlight();
+    }
+
+    public void clearHighlights() {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                squares[row][col].clearHighlight();
+            }
+        }
+    }
 }
