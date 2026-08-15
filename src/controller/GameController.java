@@ -3,6 +3,7 @@ package controller;
 import model.Game;
 import model.Move;
 import model.Piece;
+import util.SoundManager;
 import ui.ChessBoardView;
 import ui.SquareView;
 
@@ -114,6 +115,7 @@ public class GameController {
 
         if (successful) {
             System.out.println("Move successful");
+            SoundManager.playMoveSound();
             refreshBoard();
         } else {
             System.out.println("Illegal move");
@@ -159,6 +161,7 @@ public class GameController {
 
         if (successful) {
             System.out.println("Move successful");
+            SoundManager.playMoveSound();
             refreshBoard();
         } else {
             System.out.println("Illegal move");
