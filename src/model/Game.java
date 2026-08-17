@@ -1,6 +1,7 @@
 package model;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class Game {
     private final Board board;
@@ -121,6 +122,26 @@ public class Game {
     }
 
     // Getters
+    public List<Move> getLegalMoves(int row, int col) {
+        Piece piece = board.getPiece(row, col);
+        if (piece == null || piece.getColor() != currentTurn) return new ArrayList<>();
+        List<Move> moves = new ArrayList<>(piece.getLegalMoves(board, row, col));
+
+        // En passant
+        if (piece instanceof Pawn && lastMove != null) {
+            int direction = (piece.getColor() == Color.WHITE) ? -1 : 1;
+            int[] columns = {col - 1, col + 1};
+
+            for (int targetCol : columns) {
+                if (!board.isInsideBoard(row + direction, targetCol)) continue;
+
+                if (rules.isEnPassantPossible(currentTurn, row, col, row + direction, targetCol, lastMove)) {
+                    moves.add(new Move(row, col, row + direction, targetCol));
+                }
+            }
+        }
+        return moves;
+    }
     public Board getBoard() { return board; }
     public Color getCurrentTurn() { return currentTurn; }
 }

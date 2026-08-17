@@ -199,8 +199,7 @@ public class GameController {
     }
 
     private void highlightLegalMoves(Piece piece, int row, int col) {
-        for (Move move : getLegalMoves(row, col, piece)) {
-
+        for (Move move : game.getLegalMoves(row, col)) {
             int targetRow = move.getToRow();
             int targetCol = move.getToCol();
 

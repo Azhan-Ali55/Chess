@@ -169,8 +169,11 @@ public class ChessRules {
         Piece enemyPawn = board.getPiece(fromRow, toCol);
         if (!(enemyPawn instanceof Pawn) || enemyPawn.getColor() == color) return false;
 
-        // The enemy pawn must have just moved
-        if (lastMove.getFromRow() != fromRow || lastMove.getToRow() != toRow) return false;
+        // The adjacent pawn must be the pawn that just moved
+        if (lastMove.getToRow() != fromRow || lastMove.getToCol() != toCol) return false;
+
+        // It must have moved exactly two squares
+        if (Math.abs(lastMove.getFromRow() - lastMove.getToRow()) != 2) return false;
 
         return Math.abs(lastMove.getFromRow() - lastMove.getToRow()) == 2;
     }
