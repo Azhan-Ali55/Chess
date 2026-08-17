@@ -18,9 +18,12 @@ public class Pawn extends Piece {
         }
 
         // Two square movement
-        if ((getColor() == Color.WHITE && board.getPiece(row + 2 * direction, col) == null && row == 6) ||
-                (getColor() == Color.BLACK && board.getPiece(row + 2 * direction, col) == null && row == 1)) {
-            legalMoves.add(new Move(row, col, row + 2 * direction, col));
+        int oneStepRow = row + direction;
+        int twoStepRow = row + 2 * direction;
+        if (board.isInsideBoard(twoStepRow, col) && board.getPiece(oneStepRow, col) == null
+                && board.getPiece(twoStepRow, col) == null && ((getColor() == Color.WHITE && row == 6)
+                || (getColor() == Color.BLACK && row == 1))) {
+            legalMoves.add(new Move(row, col, twoStepRow, col));
         }
 
         // Right Diagonal movement
