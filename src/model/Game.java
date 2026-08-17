@@ -116,6 +116,10 @@ public class Game {
         }
     }
 
+    public boolean isCurrentPlayerInCheck() {
+        return rules.isKingInCheck(currentTurn);
+    }
+
     // Getters
     public Board getBoard() { return board; }
     public Color getCurrentTurn() { return currentTurn; }

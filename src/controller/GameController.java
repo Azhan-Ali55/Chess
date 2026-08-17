@@ -116,9 +116,15 @@ public class GameController {
 
         if (successful) {
             System.out.println("Move successful");
-            if (isCapture) SoundManager.playCaptureSound();
-            SoundManager.playMoveSound();
+            if (game.isCurrentPlayerInCheck()) {
+                SoundManager.playCheckSound();
+            } else if (isCapture) {
+                SoundManager.playCaptureSound();
+            } else {
+                SoundManager.playMoveSound();
+            }
             refreshBoard();
+
         } else {
             System.out.println("Illegal move");
             boardView.getSquare(toRow, toCol).showIllegalMove();
@@ -164,9 +170,15 @@ public class GameController {
 
         if (successful) {
             System.out.println("Move successful");
-            if (isCapture) SoundManager.playCaptureSound();
-            SoundManager.playMoveSound();
+            if (game.isCurrentPlayerInCheck()) {
+                SoundManager.playCheckSound();
+            } else if (isCapture) {
+                SoundManager.playCaptureSound();
+            } else {
+                SoundManager.playMoveSound();
+            }
             refreshBoard();
+
         } else {
             System.out.println("Illegal move");
             boardView.getSquare(row, col).showIllegalMove();
