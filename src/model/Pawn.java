@@ -43,4 +43,8 @@ public class Pawn extends Piece {
         }
         return legalMoves;
     }
+
+    public boolean canPromote(int row) {
+        return (getColor() == Color.WHITE && row == 0) || (getColor() == Color.BLACK && row == 7);
+    }
 }

@@ -9,6 +9,11 @@ public class Game {
     private Color currentTurn;
     private Move lastMove;
 
+    // Promotion state
+    private boolean promotionPending = false;
+    private int promotionRow = -1;
+    private int promotionCol = -1;
+
     public Game() {
         board = new Board();
         currentTurn = Color.WHITE;
@@ -86,7 +91,14 @@ public class Game {
                     piece.setHasMoved(movementStatus);
                     return false;
                 }
+
                 lastMove = move;
+                if (piece instanceof Pawn && ((Pawn) piece).canPromote(toRow)) {
+                    promotionPending = true;
+                    promotionRow = toRow;
+                    promotionCol = toCol;
+                    return true;
+                }
                 switchTurn();
                 return true;
             }
@@ -109,12 +121,27 @@ public class Game {
     }
 
     private void promotePawn(int row, int col, Color color, char choice) {
-        switch (choice) {
+        switch (Character.toUpperCase(choice)) {
             case 'Q' -> board.setPiece(row, col, new Queen(color));
             case 'R' -> board.setPiece(row, col, new Rook(color));
             case 'B' -> board.setPiece(row, col, new Bishop(color));
-            case 'K' -> board.setPiece(row, col, new Knight(color));
+            case 'N' -> board.setPiece(row, col, new Knight(color));
+            default -> throw new IllegalArgumentException("Invalid promotion choice");
         }
+    }
+
+    public void promotePawn(char choice) {
+        if (!promotionPending) return;
+        Piece pawn = board.getPiece(promotionRow, promotionCol);
+        if (!(pawn instanceof Pawn)) return;
+
+        Color color = pawn.getColor();
+        promotePawn(promotionRow, promotionCol, color, choice);
+
+        promotionPending = false;
+        promotionRow = -1;
+        promotionCol = -1;
+        switchTurn();
     }
 
     public boolean isCurrentPlayerInCheck() {
@@ -144,4 +171,14 @@ public class Game {
     }
     public Board getBoard() { return board; }
     public Color getCurrentTurn() { return currentTurn; }
+    public boolean isPromotionPending() { return promotionPending; }
+    public Color getPromotionColor() {
+        if (!promotionPending) return null;
+        Piece pawn = board.getPiece(promotionRow, promotionCol);
+        if (!(pawn instanceof Pawn)) return null;
+
+        return pawn.getColor();
+    }
+    public int getPromotionRow() { return promotionRow; }
+    public int getPromotionCol() { return promotionCol; }
 }

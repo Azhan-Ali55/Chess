@@ -6,12 +6,14 @@ import model.Piece;
 import util.SoundManager;
 import ui.ChessBoardView;
 import ui.SquareView;
+import ui.PromotionView;
 
 import java.util.List;
 
 public class GameController {
     private final Game game;
     private final ChessBoardView boardView;
+    private final PromotionView promotionView;
     private int selectedRow = -1;
     private int selectedCol = -1;
     private boolean dragging = false;
@@ -20,9 +22,11 @@ public class GameController {
     private int pressRow = -1;
     private int pressCol = -1;
 
-    public GameController(Game game, ChessBoardView boardView) {
+    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView) {
         this.game = game;
         this.boardView = boardView;
+        this.promotionView = promotionView;
+        setupPromotionHandlers();
         setupBoardClickHandlers();
     }
 
@@ -115,16 +119,7 @@ public class GameController {
         boolean successful = game.makeMove(move);
 
         if (successful) {
-            System.out.println("Move successful");
-            if (game.isCurrentPlayerInCheck()) {
-                SoundManager.playCheckSound();
-            } else if (isCapture) {
-                SoundManager.playCaptureSound();
-            } else {
-                SoundManager.playMoveSound();
-            }
-            refreshBoard();
-
+            handleSuccessfulMove(isCapture);
         } else {
             System.out.println("Illegal move");
             boardView.getSquare(toRow, toCol).showIllegalMove();
@@ -169,16 +164,7 @@ public class GameController {
         boolean successful = game.makeMove(move);
 
         if (successful) {
-            System.out.println("Move successful");
-            if (game.isCurrentPlayerInCheck()) {
-                SoundManager.playCheckSound();
-            } else if (isCapture) {
-                SoundManager.playCaptureSound();
-            } else {
-                SoundManager.playMoveSound();
-            }
-            refreshBoard();
-
+            handleSuccessfulMove(isCapture);
         } else {
             System.out.println("Illegal move");
             boardView.getSquare(row, col).showIllegalMove();
@@ -209,6 +195,50 @@ public class GameController {
                 boardView.highlightSquare(targetRow, targetCol);
             }
         }
+    }
+
+    private void setupPromotionHandlers() {
+        promotionView.getQueenButton().setOnAction(event -> {
+            promote('Q');
+        });
+
+        promotionView.getRookButton().setOnAction(event -> {
+            promote('R');
+        });
+
+        promotionView.getBishopButton().setOnAction(event -> {
+            promote('B');
+        });
+
+        promotionView.getKnightButton().setOnAction(event -> {
+            promote('N');
+        });
+    }
+
+    private void promote(char choice) {
+        game.promotePawn(choice);
+        promotionView.setVisible(false);
+        refreshBoard();
+    }
+
+    private void handleSuccessfulMove(boolean isCapture) {
+        System.out.println("Move successful");
+        if (game.isPromotionPending()) {
+            promotionView.setColor(game.getPromotionColor());
+            promotionView.positionAt(game.getPromotionRow(), game.getPromotionCol());
+            promotionView.setVisible(true);
+            refreshBoard();
+            return;
+        }
+
+        if (game.isCurrentPlayerInCheck()) {
+            SoundManager.playCheckSound();
+        } else if (isCapture) {
+            SoundManager.playCaptureSound();
+        } else {
+            SoundManager.playMoveSound();
+        }
+        refreshBoard();
     }
 
     private void refreshBoard() {
