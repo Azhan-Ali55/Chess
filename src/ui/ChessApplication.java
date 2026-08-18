@@ -14,10 +14,12 @@ public class ChessApplication extends Application {
         ChessBoardView boardView = new ChessBoardView(game);
         PromotionView promotionView = new PromotionView();
         promotionView.setVisible(false);
+        GameOverView gameOverView = new GameOverView();
+        gameOverView.setVisible(false);
         StackPane root = new StackPane();
-        root.getChildren().addAll(boardView, promotionView);
+        root.getChildren().addAll(boardView, promotionView, gameOverView);
         StackPane.setAlignment(promotionView, javafx.geometry.Pos.TOP_LEFT);
-        new GameController(game, boardView, promotionView);
+        new GameController(game, boardView, promotionView, gameOverView);
         Scene scene = new Scene(root);
         stage.setTitle("Chess");
         stage.setScene(scene);

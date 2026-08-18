@@ -14,6 +14,10 @@ public class Game {
     private int promotionRow = -1;
     private int promotionCol = -1;
 
+    // Win state
+    private boolean gameOver = false;
+    private Color winner = null;
+
     public Game() {
         board = new Board();
         currentTurn = Color.WHITE;
@@ -28,7 +32,7 @@ public class Game {
         int toCol = move.getToCol();
         Piece piece = board.getPiece(fromRow, fromCol);
         Piece capturedPiece = board.getPiece(toRow, toCol);
-        if (piece == null || piece.getColor() != currentTurn) return false;
+        if (piece == null || piece.getColor() != currentTurn || gameOver || promotionPending) return false;
 
         // Castling
         if (piece instanceof King) {
@@ -45,6 +49,7 @@ public class Game {
 
                 lastMove = move;
                 switchTurn();
+                checkGameOver();
                 return true;
             }
 
@@ -59,6 +64,7 @@ public class Game {
 
                 lastMove = move;
                 switchTurn();
+                checkGameOver();
                 return true;
             }
         }
@@ -77,6 +83,7 @@ public class Game {
             }
             lastMove = move;
             switchTurn();
+            checkGameOver();
             return true;
         }
 
@@ -100,6 +107,7 @@ public class Game {
                     return true;
                 }
                 switchTurn();
+                checkGameOver();
                 return true;
             }
         }
@@ -142,6 +150,24 @@ public class Game {
         promotionRow = -1;
         promotionCol = -1;
         switchTurn();
+        checkGameOver();
+    }
+
+    private void checkGameOver() {
+        if (rules.isCheckmate(currentTurn)) {
+            gameOver = true;
+            if (currentTurn == Color.WHITE) {
+                winner = Color.BLACK;
+            } else {
+                winner = Color.WHITE;
+            }
+            return;
+        }
+
+        if (rules.isStalemate(currentTurn)) {
+            gameOver = true;
+            winner = null;
+        }
     }
 
     public boolean isCurrentPlayerInCheck() {
@@ -181,4 +207,6 @@ public class Game {
     }
     public int getPromotionRow() { return promotionRow; }
     public int getPromotionCol() { return promotionCol; }
+    public boolean isGameOver() { return gameOver; }
+    public Color getWinner() { return winner; }
 }

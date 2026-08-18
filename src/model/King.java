@@ -18,7 +18,7 @@ public class King extends Piece {
             int newCol = col + direction[1];
             if (board.isInsideBoard(newRow, newCol)) {
                 Piece piece = board.getPiece(newRow, newCol);
-                if (piece == null || piece.getColor() != getColor()) {
+                if (piece == null || (piece.getColor() != getColor() && !(piece instanceof King))) {
                     legalMoves.add(new Move(row, col, newRow, newCol));
                 }
             }

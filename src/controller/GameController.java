@@ -7,6 +7,7 @@ import util.SoundManager;
 import ui.ChessBoardView;
 import ui.SquareView;
 import ui.PromotionView;
+import ui.GameOverView;
 
 import java.util.List;
 
@@ -14,6 +15,7 @@ public class GameController {
     private final Game game;
     private final ChessBoardView boardView;
     private final PromotionView promotionView;
+    private final GameOverView gameOverView;
     private int selectedRow = -1;
     private int selectedCol = -1;
     private boolean dragging = false;
@@ -22,10 +24,11 @@ public class GameController {
     private int pressRow = -1;
     private int pressCol = -1;
 
-    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView) {
+    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView) {
         this.game = game;
         this.boardView = boardView;
         this.promotionView = promotionView;
+        this.gameOverView = gameOverView;
         setupPromotionHandlers();
         setupBoardClickHandlers();
     }
@@ -218,6 +221,7 @@ public class GameController {
     private void promote(char choice) {
         game.promotePawn(choice);
         promotionView.setVisible(false);
+        if (game.isGameOver()) handleGameOver();
         refreshBoard();
     }
 
@@ -231,6 +235,12 @@ public class GameController {
             return;
         }
 
+        if (game.isGameOver()) {
+            handleGameOver();
+            refreshBoard();
+            return;
+        }
+
         if (game.isCurrentPlayerInCheck()) {
             SoundManager.playCheckSound();
         } else if (isCapture) {
@@ -239,6 +249,14 @@ public class GameController {
             SoundManager.playMoveSound();
         }
         refreshBoard();
+    }
+
+    private void handleGameOver() {
+        if (game.getWinner() != null) {
+            gameOverView.showCheckmate(game.getWinner());
+        } else {
+            gameOverView.showStalemate();
+        }
     }
 
     private void refreshBoard() {
