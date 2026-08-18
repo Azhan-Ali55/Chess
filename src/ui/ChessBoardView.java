@@ -9,6 +9,8 @@ public class ChessBoardView extends GridPane {
     private static final int BOARD_SIZE = 8;
     private final SquareView[][] squares = new SquareView[8][8];
     private final Game game;
+    private PieceView draggingPiece;
+    private Piece draggingModelPiece;
 
     public ChessBoardView(Game game) {
         this.game = game;
@@ -64,6 +66,50 @@ public class ChessBoardView extends GridPane {
             for (int col = 0; col < 8; col++) {
                 squares[row][col].clearHighlight();
             }
+        }
+    }
+
+    public void startDragging(int row, int col, double sceneX, double sceneY) {
+        Piece piece = game.getBoard().getPiece(row, col);
+        if (piece == null) return;
+        draggingModelPiece = piece;
+        draggingPiece = new PieceView(piece);
+
+        // Make it float above the board
+        draggingPiece.setManaged(false);
+        draggingPiece.setMouseTransparent(true);
+
+        getChildren().add(draggingPiece);
+        updateDraggingPiece(sceneX, sceneY);
+
+        // Hide the original piece
+        SquareView square = squares[row][col];
+
+        if (!square.getChildren().isEmpty()) {
+            square.getChildren().get(0).setVisible(false);
+        }
+    }
+
+    public void updateDraggingPiece(double sceneX, double sceneY) {
+        if (draggingPiece == null) return;
+        javafx.geometry.Point2D point = sceneToLocal(sceneX, sceneY);
+
+        // Center the 70x70 piece under the mouse
+        draggingPiece.setLayoutX(point.getX() - 35);
+        draggingPiece.setLayoutY(point.getY() - 35);
+    }
+
+    public void stopDragging(int row, int col) {
+        if (draggingPiece != null) {
+            getChildren().remove(draggingPiece);
+            draggingPiece = null;
+            draggingModelPiece = null;
+        }
+
+        SquareView square = squares[row][col];
+
+        if (!square.getChildren().isEmpty()) {
+            square.getChildren().get(0).setVisible(true);
         }
     }
 

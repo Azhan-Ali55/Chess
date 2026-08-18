@@ -73,6 +73,11 @@ public class GameController {
                         selectedCol = pressCol;
 
                         showLegalMoves(piece, pressRow, pressCol);
+                        boardView.startDragging(pressRow, pressCol, event.getSceneX(), event.getSceneY());
+                    }
+
+                    if (dragging) {
+                        boardView.updateDraggingPiece(event.getSceneX(), event.getSceneY());
                     }
                 });
 
@@ -80,6 +85,10 @@ public class GameController {
                 square.setOnMouseReleased(event -> {
 
                     if (dragging) {
+                        // Stop the dragging animation
+                        boardView.stopDragging(pressRow, pressCol);
+
+                        // Fields
                         double x = event.getSceneX();
                         double y = event.getSceneY();
 
