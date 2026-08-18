@@ -170,6 +170,26 @@ public class Game {
         }
     }
 
+    public boolean isCapture(Move move) {
+        int toRow = move.getToRow();
+        int toCol = move.getToCol();
+
+        // Normal capture
+        if (board.getPiece(toRow, toCol) != null) return true;
+
+        // En passant capture
+        int fromRow = move.getFromRow();
+        int fromCol = move.getFromCol();
+
+        Piece piece = board.getPiece(fromRow, fromCol);
+
+        if (piece instanceof Pawn &&
+                rules.isEnPassantPossible(piece.getColor(), fromRow, fromCol, toRow, toCol, lastMove)) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isCurrentPlayerInCheck() {
         return rules.isKingInCheck(currentTurn);
     }

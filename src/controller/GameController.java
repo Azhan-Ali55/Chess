@@ -127,7 +127,7 @@ public class GameController {
 
         Move move = getMove(toRow, toCol);
 
-        boolean isCapture = game.getBoard().getPiece(toRow, toCol) != null;
+        boolean isCapture = game.isCapture(move);
         boolean successful = game.makeMove(move);
 
         if (successful) {
@@ -172,7 +172,7 @@ public class GameController {
         // Second click: attempt the move
         Move move = getMove(row, col);
 
-        boolean isCapture = game.getBoard().getPiece(row, col) != null;
+        boolean isCapture = game.isCapture(move);
         boolean successful = game.makeMove(move);
 
         if (successful) {
