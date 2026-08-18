@@ -14,6 +14,7 @@ public class SoundManager {
     };
     private static final AudioClip captureSound = loadSound("/sounds/piece-capture.mp3");
     private static final AudioClip checkSound = loadSound("/sounds/check.mp3");
+    private static final AudioClip checkmateSound = loadSound("/sounds/checkmate.mp3");
 
     private static AudioClip loadSound(String path) {
         var resource = SoundManager.class.getResource(path);
@@ -32,8 +33,6 @@ public class SoundManager {
     public static void playCaptureSound() {
         captureSound.play();
     }
-
-    public static void playCheckSound() {
-        checkSound.play();
-    }
+    public static void playCheckSound() { checkSound.play(); }
+    public static void playCheckmateSound() { checkmateSound.play(); }
 }

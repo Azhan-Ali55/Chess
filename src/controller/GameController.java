@@ -253,6 +253,7 @@ public class GameController {
 
     private void handleGameOver() {
         if (game.getWinner() != null) {
+            SoundManager.playCheckmateSound();
             gameOverView.showCheckmate(game.getWinner());
         } else {
             gameOverView.showStalemate();
