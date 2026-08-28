@@ -209,6 +209,15 @@ public class GameController {
         }
     }
 
+    private void highlightKingInCheck() {
+        if (!game.isCurrentPlayerInCheck()) return;
+        int[] kingPosition = game.getKingPosition(game.getCurrentTurn());
+
+        if (kingPosition != null) {
+            boardView.highlightCheck(kingPosition[0], kingPosition[1]);
+        }
+    }
+
     private void setupPromotionHandlers() {
         promotionView.getQueenButton().setOnAction(event -> {
             promote('Q');
@@ -245,8 +254,9 @@ public class GameController {
         }
 
         if (game.isGameOver()) {
-            handleGameOver();
             refreshBoard();
+            if (game.isCurrentPlayerInCheck()) highlightKingInCheck();
+            handleGameOver();
             return;
         }
 
@@ -258,6 +268,7 @@ public class GameController {
             SoundManager.playMoveSound();
         }
         refreshBoard();
+        highlightKingInCheck();
     }
 
     private void handleGameOver() {

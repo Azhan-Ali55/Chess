@@ -116,4 +116,8 @@ public class ChessBoardView extends GridPane {
     public void highlightCapture(int row, int col) {
         squares[row][col].highlightCapture();
     }
+
+    public void highlightCheck(int row, int col) {
+        squares[row][col].highlightCheck();
+    }
 }

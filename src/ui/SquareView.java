@@ -56,6 +56,18 @@ public class SquareView extends StackPane {
         getChildren().add(ring);
     }
 
+    public void highlightCheck() {
+        clearHighlight();
+
+        Rectangle checkOverlay = new Rectangle();
+        checkOverlay.widthProperty().bind(widthProperty());
+        checkOverlay.heightProperty().bind(heightProperty());
+        checkOverlay.setFill(Color.rgb(220, 50, 50, 0.55));
+        checkOverlay.setMouseTransparent(true);
+
+        getChildren().add(checkOverlay);
+    }
+
     public void clearHighlight() {
         if (highlightOverlay != null) {
             getChildren().remove(highlightOverlay);

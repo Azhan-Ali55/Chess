@@ -225,6 +225,19 @@ public class Game {
 
         return pawn.getColor();
     }
+
+    public int[] getKingPosition(Color color) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = board.getPiece(row, col);
+
+                if (piece instanceof King && piece.getColor() == color) {
+                    return new int[]{row, col};
+                }
+            }
+        }
+        return null;
+    }
     public int getPromotionRow() { return promotionRow; }
     public int getPromotionCol() { return promotionCol; }
     public boolean isGameOver() { return gameOver; }
