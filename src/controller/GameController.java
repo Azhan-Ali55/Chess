@@ -43,6 +43,9 @@ public class GameController {
 
                 // Mouse pressed
                 square.setOnMousePressed(event -> {
+                    // Don't let user click when game is over
+                    if (game.isGameOver() || game.isPromotionPending()) return;
+
                     pressX = event.getSceneX();
                     pressY = event.getSceneY();
 
@@ -54,6 +57,9 @@ public class GameController {
 
                 // Mouse dragged
                 square.setOnMouseDragged(event -> {
+                    // Don't let user click when game is over
+                    if (game.isGameOver() || game.isPromotionPending()) return;
+
                     double distanceX = event.getSceneX() - pressX;
                     double distanceY = event.getSceneY() - pressY;
 
@@ -83,6 +89,10 @@ public class GameController {
 
                 // Mouse released
                 square.setOnMouseReleased(event -> {
+                    if (game.isGameOver() || game.isPromotionPending()) {
+                        dragging = false;
+                        return;
+                    }
 
                     if (dragging) {
                         // Stop the dragging animation
@@ -112,6 +122,8 @@ public class GameController {
 
                 // Normal click
                 square.setOnMouseClicked(event -> {
+                    // Don't let user click when game is over
+                    if (game.isGameOver() || game.isPromotionPending()) return;
 
                     // So that drag is not treated as a click
                     if (!dragging) handleSquareClick(clickedRow, clickedCol);
