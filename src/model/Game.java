@@ -213,8 +213,24 @@ public class Game {
                 }
             }
         }
+
+        // Castling
+        if (piece instanceof King) {
+            int kingRow = (currentTurn == Color.WHITE) ? 7 : 0;
+
+            // Kingside castling
+            if (row == kingRow && col == 4 && rules.isKingSideCastlePossible(currentTurn)) {
+                moves.add(new Move(row, col, row, 6));
+            }
+
+            // Queenside castling
+            if (row == kingRow && col == 4 && rules.isQueenSideCastlePossible(currentTurn)) {
+                moves.add(new Move(row, col, row, 2));
+            }
+        }
         return moves;
     }
+
     public Board getBoard() { return board; }
     public Color getCurrentTurn() { return currentTurn; }
     public boolean isPromotionPending() { return promotionPending; }
