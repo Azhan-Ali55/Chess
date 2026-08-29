@@ -11,6 +11,9 @@ public class SquareView extends StackPane {
     private final int col;
     private Rectangle highlightOverlay;
     private Circle moveDot;
+    private Circle captureRing;
+    private Rectangle checkOverlay;
+    private Rectangle lastMoveOverlay;
 
     public SquareView(int row, int col) {
         this.row = row;
@@ -39,6 +42,7 @@ public class SquareView extends StackPane {
         moveDot = new Circle(9);
         moveDot.setFill(Color.rgb(50, 50, 50, 0.45));
         moveDot.setMouseTransparent(true);
+        StackPane.setAlignment(moveDot, Pos.CENTER);
 
         getChildren().addAll(highlightOverlay, moveDot);
     }
@@ -46,20 +50,22 @@ public class SquareView extends StackPane {
     public void highlightCapture() {
         clearHighlight();
 
-        Circle ring = new Circle(38);
-        ring.setFill(Color.TRANSPARENT);
-        ring.setStroke(Color.rgb(50, 50, 50, 0.45));
-        ring.setStrokeWidth(7);
-        ring.setMouseTransparent(true);
-        StackPane.setAlignment(ring, Pos.CENTER);
+        captureRing = new Circle(38);
+        captureRing.setFill(Color.TRANSPARENT);
+        captureRing.setStroke(Color.rgb(50, 50, 50, 0.45));
+        captureRing.setStrokeWidth(7);
+        captureRing.setMouseTransparent(true);
 
-        getChildren().add(ring);
+        StackPane.setAlignment(captureRing, Pos.CENTER);
+        getChildren().add(captureRing);
     }
 
     public void highlightCheck() {
-        clearHighlight();
+        if (checkOverlay != null) {
+            getChildren().remove(checkOverlay);
+        }
 
-        Rectangle checkOverlay = new Rectangle();
+        checkOverlay = new Rectangle();
         checkOverlay.widthProperty().bind(widthProperty());
         checkOverlay.heightProperty().bind(heightProperty());
         checkOverlay.setFill(Color.rgb(220, 50, 50, 0.55));
@@ -68,7 +74,21 @@ public class SquareView extends StackPane {
         getChildren().add(checkOverlay);
     }
 
-    public void clearHighlight() {
+    public void highlightLastMove() {
+        if (lastMoveOverlay != null) {
+            getChildren().remove(lastMoveOverlay);
+        }
+
+        lastMoveOverlay = new Rectangle();
+        lastMoveOverlay.widthProperty().bind(widthProperty());
+        lastMoveOverlay.heightProperty().bind(heightProperty());
+        lastMoveOverlay.setFill(Color.rgb(255, 255, 0, 0.25));
+        lastMoveOverlay.setMouseTransparent(true);
+
+        getChildren().add(0, lastMoveOverlay);
+    }
+
+    public void clearMoveHighlight() {
         if (highlightOverlay != null) {
             getChildren().remove(highlightOverlay);
             highlightOverlay = null;
@@ -78,6 +98,31 @@ public class SquareView extends StackPane {
             getChildren().remove(moveDot);
             moveDot = null;
         }
+
+        if (captureRing != null) {
+            getChildren().remove(captureRing);
+            captureRing = null;
+        }
+    }
+
+    public void clearCheckHighlight() {
+        if (checkOverlay != null) {
+            getChildren().remove(checkOverlay);
+            checkOverlay = null;
+        }
+    }
+
+    public void clearLastMoveHighlight() {
+        if (lastMoveOverlay != null) {
+            getChildren().remove(lastMoveOverlay);
+            lastMoveOverlay = null;
+        }
+    }
+
+    public void clearHighlight() {
+        clearMoveHighlight();
+        clearCheckHighlight();
+        clearLastMoveHighlight();
     }
 
     public void showIllegalMove() {

@@ -45,7 +45,9 @@ public class ChessBoardView extends GridPane {
                 SquareView square = squares[row][col];
 
                 // Remove the old piece image
-                square.getChildren().clear();
+                if (!square.getChildren().isEmpty()) {
+                    square.getChildren().removeIf(node -> node instanceof PieceView);
+                }
 
                 Piece piece = board.getPiece(row, col);
 
@@ -65,6 +67,22 @@ public class ChessBoardView extends GridPane {
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 squares[row][col].clearHighlight();
+            }
+        }
+    }
+
+    public void clearMoveHighlights() {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                squares[row][col].clearMoveHighlight();
+            }
+        }
+    }
+
+    public void clearLastMoveHighlight() {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                squares[row][col].clearLastMoveHighlight();
             }
         }
     }
@@ -119,5 +137,10 @@ public class ChessBoardView extends GridPane {
 
     public void highlightCheck(int row, int col) {
         squares[row][col].highlightCheck();
+    }
+
+    public void highlightLastMove(int fromRow, int fromCol, int toRow, int toCol) {
+        squares[fromRow][fromCol].highlightLastMove();
+        squares[toRow][toCol].highlightLastMove();
     }
 }

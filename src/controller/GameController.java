@@ -145,11 +145,11 @@ public class GameController {
         if (successful) {
             handleSuccessfulMove(isCapture);
         } else {
+            boardView.clearHighlights();
             System.out.println("Illegal move");
             boardView.getSquare(toRow, toCol).showIllegalMove();
         }
 
-        boardView.clearHighlights();
         selectedRow = -1;
         selectedCol = -1;
     }
@@ -190,11 +190,11 @@ public class GameController {
         if (successful) {
             handleSuccessfulMove(isCapture);
         } else {
+            boardView.clearHighlights();
             System.out.println("Illegal move");
             boardView.getSquare(row, col).showIllegalMove();
         }
 
-        boardView.clearHighlights();
         // Clear selection
         selectedRow = -1;
         selectedCol = -1;
@@ -209,14 +209,27 @@ public class GameController {
     }
 
     private void highlightLegalMoves(Piece piece, int row, int col) {
+        // Remove only old legal-move indicators
+        boardView.clearMoveHighlights();
+
         for (Move move : game.getLegalMoves(row, col)) {
             int targetRow = move.getToRow();
             int targetCol = move.getToCol();
+            boolean isCapture = game.isCapture(move);
 
-            if (game.getBoard().getPiece(targetRow, targetCol) != null) {
+            if (isCapture) {
                 boardView.highlightCapture(targetRow, targetCol);
             } else {
                 boardView.highlightSquare(targetRow, targetCol);
+            }
+
+            // Castling
+            if (piece instanceof model.King &&
+                    Math.abs(targetCol - col) == 2) {
+                int direction = targetCol > col ? 1 : -1;
+
+                // Highlight the square the king passes through.
+                boardView.highlightSquare(row, col + direction);
             }
         }
     }
@@ -228,6 +241,21 @@ public class GameController {
         if (kingPosition != null) {
             boardView.highlightCheck(kingPosition[0], kingPosition[1]);
         }
+    }
+
+    private void highlightLastMove() {
+        Move lastMove = game.getLastMove();
+        if (lastMove == null) return;
+
+        // Remove yellow highlighting from the previous move
+        boardView.clearLastMoveHighlight();
+
+        boardView.highlightLastMove(
+                lastMove.getFromRow(),
+                lastMove.getFromCol(),
+                lastMove.getToRow(),
+                lastMove.getToCol()
+        );
     }
 
     private void setupPromotionHandlers() {
@@ -251,22 +279,32 @@ public class GameController {
     private void promote(char choice) {
         game.promotePawn(choice);
         promotionView.setVisible(false);
-        if (game.isGameOver()) handleGameOver();
+        refreshBoard();
+        highlightLastMove();
+        if (game.isGameOver()) {
+            if (game.isCurrentPlayerInCheck()) highlightKingInCheck();
+            handleGameOver();
+        }
         refreshBoard();
     }
 
     private void handleSuccessfulMove(boolean isCapture) {
         System.out.println("Move successful");
+        // Remove legal-move dots/rings
+        boardView.clearMoveHighlights();
+
         if (game.isPromotionPending()) {
             promotionView.setColor(game.getPromotionColor());
             promotionView.positionAt(game.getPromotionRow(), game.getPromotionCol());
             promotionView.setVisible(true);
             refreshBoard();
+            highlightLastMove();
             return;
         }
 
         if (game.isGameOver()) {
             refreshBoard();
+            highlightLastMove();
             if (game.isCurrentPlayerInCheck()) highlightKingInCheck();
             handleGameOver();
             return;
@@ -280,7 +318,8 @@ public class GameController {
             SoundManager.playMoveSound();
         }
         refreshBoard();
-        highlightKingInCheck();
+        highlightLastMove();
+        if (game.isCurrentPlayerInCheck()) highlightKingInCheck();
     }
 
     private void handleGameOver() {

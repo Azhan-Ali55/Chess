@@ -242,4 +242,5 @@ public class Game {
     public int getPromotionCol() { return promotionCol; }
     public boolean isGameOver() { return gameOver; }
     public Color getWinner() { return winner; }
+    public Move getLastMove() { return lastMove; }
 }
