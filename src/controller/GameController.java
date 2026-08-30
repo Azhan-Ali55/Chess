@@ -3,19 +3,27 @@ package controller;
 import model.Game;
 import model.Move;
 import model.Piece;
+import model.Color;
+import model.Difficulty;
 import util.SoundManager;
+import util.StockfishEngine;
+import util.FenConverter;
 import ui.ChessBoardView;
 import ui.SquareView;
 import ui.PromotionView;
 import ui.GameOverView;
-
+import java.io.IOException;
 import java.util.List;
+import javafx.concurrent.Task;
 
 public class GameController {
     private final Game game;
     private final ChessBoardView boardView;
     private final PromotionView promotionView;
     private final GameOverView gameOverView;
+    private final StockfishEngine stockfish;
+    private final Color stockfishColor = Color.BLACK;
+    private final int stockfishThinkTime = 3000;
     private int selectedRow = -1;
     private int selectedCol = -1;
     private boolean dragging = false;
@@ -29,6 +37,16 @@ public class GameController {
         this.boardView = boardView;
         this.promotionView = promotionView;
         this.gameOverView = gameOverView;
+
+        // Start stockfish
+        stockfish = new StockfishEngine();
+        try {
+            stockfish.start();
+            stockfish.setDifficulty(Difficulty.GRANDMASTER);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         setupPromotionHandlers();
         setupBoardClickHandlers();
     }
@@ -276,6 +294,50 @@ public class GameController {
         });
     }
 
+    private void makeStockfishMove() {
+        String fen = FenConverter.boardToFen(game);
+
+        Task<String> task = new Task<>() {
+            @Override
+            protected String call() throws Exception {
+                return stockfish.getBestMove(fen, stockfishThinkTime);
+            }
+        };
+
+        task.setOnSucceeded(event -> {
+
+            String bestMove = task.getValue();
+
+            System.out.println(
+                    "Stockfish best move: " + bestMove
+            );
+
+            Move move = stockfish.convertToMove(bestMove);
+            boolean isCapture = game.isCapture(move);
+            boolean successful = game.makeMove(move);
+
+            if (successful) {
+                handleSuccessfulMove(isCapture);
+            } else {
+                System.out.println(
+                        "Stockfish returned an illegal move!"
+                );
+            }
+        });
+
+        task.setOnFailed(event -> {
+            System.out.println(
+                    "Stockfish failed."
+            );
+
+            task.getException().printStackTrace();
+        });
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
+    }
+
     private void promote(char choice) {
         game.promotePawn(choice);
         promotionView.setVisible(false);
@@ -320,6 +382,7 @@ public class GameController {
         refreshBoard();
         highlightLastMove();
         if (game.isCurrentPlayerInCheck()) highlightKingInCheck();
+        if (game.getCurrentTurn() == stockfishColor) makeStockfishMove();
     }
 
     private void handleGameOver() {
