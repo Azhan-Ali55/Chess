@@ -23,6 +23,7 @@ public class GameController {
     private final GameOverView gameOverView;
     private final StockfishEngine stockfish;
     private final Color stockfishColor = Color.BLACK;
+    private final Difficulty difficulty;
     private final int stockfishThinkTime = 3000;
     private int selectedRow = -1;
     private int selectedCol = -1;
@@ -32,17 +33,18 @@ public class GameController {
     private int pressRow = -1;
     private int pressCol = -1;
 
-    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView) {
+    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView, Difficulty difficulty) {
         this.game = game;
         this.boardView = boardView;
         this.promotionView = promotionView;
         this.gameOverView = gameOverView;
+        this.difficulty = difficulty;
 
         // Start stockfish
         stockfish = new StockfishEngine();
         try {
             stockfish.start();
-            stockfish.setDifficulty(Difficulty.GRANDMASTER);
+            stockfish.setDifficulty(difficulty);
         } catch (IOException e) {
             e.printStackTrace();
         }
