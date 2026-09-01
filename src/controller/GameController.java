@@ -302,7 +302,7 @@ public class GameController {
         Task<String> task = new Task<>() {
             @Override
             protected String call() throws Exception {
-                return stockfish.getBestMove(fen, stockfishThinkTime);
+                return stockfish.getBestMove(fen, stockfishThinkTime, difficulty.getBlunderChance());
             }
         };
 
@@ -348,8 +348,17 @@ public class GameController {
         if (game.isGameOver()) {
             if (game.isCurrentPlayerInCheck()) highlightKingInCheck();
             handleGameOver();
+            return;
         }
-        refreshBoard();
+
+        if (game.isCurrentPlayerInCheck()) {
+            SoundManager.playCheckSound();
+        } else {
+            SoundManager.playCaptureSound(); // promotion move — treat as non-quiet, or use playMoveSound() if you prefer
+        }
+
+        if (game.getCurrentTurn() == stockfishColor) makeStockfishMove();
+//        refreshBoard();
     }
 
     private void handleSuccessfulMove(boolean isCapture) {
