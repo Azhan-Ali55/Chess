@@ -1,20 +1,17 @@
 package controller;
 
-import model.Game;
-import model.Move;
-import model.Piece;
-import model.Color;
-import model.Difficulty;
+import javafx.animation.KeyFrame;
+import javafx.geometry.Point2D;
+import javafx.util.Duration;
+import model.*;
+import ui.*;
 import util.SoundManager;
 import util.StockfishEngine;
 import util.FenConverter;
-import ui.ChessBoardView;
-import ui.SquareView;
-import ui.PromotionView;
-import ui.GameOverView;
 import java.io.IOException;
 import java.util.List;
 import javafx.concurrent.Task;
+import javafx.animation.Timeline;
 
 public class GameController {
     private final Game game;
@@ -25,6 +22,9 @@ public class GameController {
     private final Color stockfishColor = Color.BLACK;
     private final Difficulty difficulty;
     private final int stockfishThinkTime = 3000;
+    private final Clock clock;
+    private final ClockView clockView;
+    private Timeline clockTimeline;
     private int selectedRow = -1;
     private int selectedCol = -1;
     private boolean dragging = false;
@@ -33,12 +33,16 @@ public class GameController {
     private int pressRow = -1;
     private int pressCol = -1;
 
-    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView, Difficulty difficulty) {
+    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView, Difficulty difficulty, ClockView clockView, int minutesPerSide) {
         this.game = game;
         this.boardView = boardView;
         this.promotionView = promotionView;
         this.gameOverView = gameOverView;
+        this.clockView = clockView;
         this.difficulty = difficulty;
+
+        clock = new Clock(minutesPerSide);
+        clockView.update(clock);
 
         // Start stockfish
         stockfish = new StockfishEngine();
@@ -51,6 +55,7 @@ public class GameController {
 
         setupPromotionHandlers();
         setupBoardClickHandlers();
+        setupClock();
     }
 
     private void setupBoardClickHandlers() {
@@ -122,7 +127,7 @@ public class GameController {
                         double x = event.getSceneX();
                         double y = event.getSceneY();
 
-                        javafx.geometry.Point2D point =
+                        Point2D point =
                                 boardView.sceneToLocal(x, y);
 
                         int toCol = (int) (point.getX() / 80);
@@ -150,6 +155,28 @@ public class GameController {
                     dragging = false;
                 });
             }
+        }
+    }
+
+    private void setupClock() {
+        clockTimeline = new Timeline(new KeyFrame(
+                Duration.seconds(1), event -> tickClock()));
+        clockTimeline.setCycleCount(Timeline.INDEFINITE);
+        clock.start(Color.WHITE);
+        clockTimeline.play();
+    }
+
+    private void tickClock() {
+        if (game.isGameOver() || game.isPromotionPending()) return;
+
+        boolean timedOut = clock.tick();
+        clockView.update(clock);
+
+        if (timedOut) {
+            clockTimeline.stop();
+            game.loseOnTime(clock.getActiveColor());
+            refreshBoard();
+            handleGameOver();
         }
     }
 
@@ -244,7 +271,7 @@ public class GameController {
             }
 
             // Castling
-            if (piece instanceof model.King &&
+            if (piece instanceof King &&
                     Math.abs(targetCol - col) == 2) {
                 int direction = targetCol > col ? 1 : -1;
 
@@ -356,9 +383,10 @@ public class GameController {
         } else {
             SoundManager.playCaptureSound(); // promotion move — treat as non-quiet, or use playMoveSound() if you prefer
         }
+        clock.switchTo(game.getCurrentTurn());
+        clockView.update(clock);
 
         if (game.getCurrentTurn() == stockfishColor) makeStockfishMove();
-//        refreshBoard();
     }
 
     private void handleSuccessfulMove(boolean isCapture) {
@@ -393,6 +421,8 @@ public class GameController {
         refreshBoard();
         highlightLastMove();
         if (game.isCurrentPlayerInCheck()) highlightKingInCheck();
+        clock.switchTo(game.getCurrentTurn());
+        clockView.update(clock);
         if (game.getCurrentTurn() == stockfishColor) makeStockfishMove();
     }
 

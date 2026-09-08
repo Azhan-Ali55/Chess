@@ -15,8 +15,9 @@ public class Game {
     private int promotionCol = -1;
 
     // Win state
-    private boolean gameOver = false;
     private Color winner = null;
+    private boolean gameOver = false;
+    private boolean timeoutLoss = false;
 
     public Game() {
         board = new Board();
@@ -153,6 +154,13 @@ public class Game {
         checkGameOver();
     }
 
+    public void loseOnTime(Color colorThatRanOut) {
+        if (gameOver) return;
+        gameOver = true;
+        timeoutLoss = true;
+        winner = (colorThatRanOut == Color.WHITE) ? Color.BLACK : Color.WHITE;
+    }
+
     private void checkGameOver() {
         if (rules.isCheckmate(currentTurn)) {
             gameOver = true;
@@ -257,6 +265,7 @@ public class Game {
     public int getPromotionRow() { return promotionRow; }
     public int getPromotionCol() { return promotionCol; }
     public boolean isGameOver() { return gameOver; }
+    public boolean isTimeoutLoss() { return timeoutLoss; }
     public Color getWinner() { return winner; }
     public Move getLastMove() { return lastMove; }
 }

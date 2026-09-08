@@ -3,6 +3,7 @@ package ui;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,7 +12,6 @@ import javafx.scene.layout.StackPane;
 import model.Difficulty;
 import model.Game;
 import controller.GameController;
-
 
 public class ChessApplication extends Application {
     @Override
@@ -50,10 +50,19 @@ public class ChessApplication extends Application {
         promotionView.setVisible(false);
         GameOverView gameOverView = new GameOverView();
         gameOverView.setVisible(false);
-        StackPane root = new StackPane();
-        root.getChildren().addAll(boardView, promotionView, gameOverView);
-        StackPane.setAlignment(promotionView, javafx.geometry.Pos.TOP_LEFT);
-        new GameController(game, boardView, promotionView, gameOverView, difficulty);
+        ClockView clockView = new ClockView();
+        int minutesPerSide = 1;
+        StackPane boardStack = new StackPane();
+        boardStack.getChildren().addAll(boardView, promotionView, gameOverView);
+        StackPane.setAlignment(promotionView, Pos.TOP_LEFT);
+
+        // Clock sits above the board, not overlapping it
+        BorderPane root = new BorderPane();
+        BorderPane.setAlignment(clockView, Pos.CENTER);
+        root.setTop(clockView);
+        root.setCenter(boardStack);
+
+        new GameController(game, boardView, promotionView, gameOverView, difficulty, clockView, minutesPerSide);
         Scene scene = new Scene(root);
         stage.setTitle("Chess");
         stage.setScene(scene);
