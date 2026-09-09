@@ -76,6 +76,7 @@ public class ChessApplication extends Application {
         gameOverView.setVisible(false);
         ClockView clockView = new ClockView();
         ControlPanelView controlPanelView = new ControlPanelView();
+        MaterialView materialView = new MaterialView();
         int minutesPerSide = 1;
         StackPane boardStack = new StackPane();
         boardStack.getChildren().addAll(boardView, promotionView, gameOverView);
@@ -86,11 +87,12 @@ public class ChessApplication extends Application {
         root.setTop(clockView);
         root.setCenter(boardStack);
         root.setRight(controlPanelView);
+        root.setBottom(materialView);
         BorderPane.setAlignment(clockView, Pos.CENTER);
         BorderPane.setAlignment(controlPanelView, Pos.CENTER);
 
         new GameController(game, boardView, promotionView, gameOverView, clockView,
-                difficulty, minutesPerSide, controlPanelView, humanColor);
+                difficulty, minutesPerSide, controlPanelView, materialView, humanColor);
         Scene scene = new Scene(root);
         stage.setTitle("Chess");
         stage.setScene(scene);

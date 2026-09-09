@@ -10,6 +10,7 @@ public class GameController {
     private final PromotionView promotionView;
     private final GameOverView gameOverView;
     private final ControlPanelView controlPanelView;
+    private final MaterialView materialView;
     private final Color stockfishColor;
     private final Color humanColor;
     private final int stockfishThinkTime = 3000;
@@ -18,14 +19,15 @@ public class GameController {
     private final StockfishController stockfishController;
     private final ClockController clockController;
 
-    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView,
-                          GameOverView gameOverView, ClockView clockView, Difficulty difficulty,
-                          int minutesPerSide, ControlPanelView controlPanelView, Color humanColor) {
+    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView,
+                          ClockView clockView, Difficulty difficulty, int minutesPerSide, ControlPanelView controlPanelView,
+                          MaterialView materialView, Color humanColor) {
         this.game = game;
         this.boardView = boardView;
         this.promotionView = promotionView;
         this.gameOverView = gameOverView;
         this.controlPanelView = controlPanelView;
+        this.materialView = materialView;
         this.humanColor = humanColor;
         this.stockfishColor = (humanColor == Color.WHITE) ? Color.BLACK : Color.WHITE;
 
@@ -185,5 +187,6 @@ public class GameController {
 
     private void refreshBoard() {
         boardView.refresh();
+        materialView.update(game.getMaterialBalance());
     }
 }
