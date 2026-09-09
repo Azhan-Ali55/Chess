@@ -65,7 +65,7 @@ public class ChessApplication extends Application {
         BorderPane.setAlignment(clockView, Pos.CENTER);
         BorderPane.setAlignment(controlPanelView, Pos.CENTER);
 
-        new GameController(game, boardView, promotionView, gameOverView, difficulty, clockView, minutesPerSide, controlPanelView);
+        new GameController(game, boardView, promotionView, gameOverView, clockView, difficulty, minutesPerSide, controlPanelView);
         Scene scene = new Scene(root);
         stage.setTitle("Chess");
         stage.setScene(scene);
