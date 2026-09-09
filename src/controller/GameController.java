@@ -10,7 +10,7 @@ public class GameController {
     private final PromotionView promotionView;
     private final GameOverView gameOverView;
     private final ControlPanelView controlPanelView;
-    private final Color stockfishColor = Color.BLACK;
+    private final Color stockfishColor;
     private final Color humanColor;
     private final int stockfishThinkTime = 3000;
     private final HighlightController highlightController;
@@ -19,14 +19,15 @@ public class GameController {
     private final ClockController clockController;
 
     public GameController(Game game, ChessBoardView boardView, PromotionView promotionView,
-                          GameOverView gameOverView, ClockView clockView,
-                          Difficulty difficulty, int minutesPerSide, ControlPanelView controlPanelView) {
+                          GameOverView gameOverView, ClockView clockView, Difficulty difficulty,
+                          int minutesPerSide, ControlPanelView controlPanelView, Color humanColor) {
         this.game = game;
         this.boardView = boardView;
         this.promotionView = promotionView;
         this.gameOverView = gameOverView;
         this.controlPanelView = controlPanelView;
-        this.humanColor = (stockfishColor == Color.WHITE) ? Color.BLACK : Color.WHITE;
+        this.humanColor = humanColor;
+        this.stockfishColor = (humanColor == Color.WHITE) ? Color.BLACK : Color.WHITE;
 
         highlightController = new HighlightController(game, boardView);
         stockfishController = new StockfishController(game, difficulty, stockfishThinkTime);
@@ -40,6 +41,9 @@ public class GameController {
         setupPromotionHandlers();
         setupControlButtons();
         clockController.start();
+
+        // White always moves first
+        if (game.getCurrentTurn() == stockfishColor) requestStockfishMove();
     }
 
     private boolean attemptMove(Move move, boolean isCapture) {

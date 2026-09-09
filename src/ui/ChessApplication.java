@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.scene.layout.StackPane;
+import model.Color;
 import model.Difficulty;
 import model.Game;
 import controller.GameController;
@@ -26,7 +27,7 @@ public class ChessApplication extends Application {
             button.setPrefWidth(180);
             button.setPrefHeight(40);
             button.setOnAction(event -> {
-                startGame(stage, difficulty);
+                showColorSelection(stage, difficulty);;
             });
 
             difficultyBox.getChildren().add(button);
@@ -43,7 +44,30 @@ public class ChessApplication extends Application {
         stage.show();
     }
 
-    public void startGame(Stage stage, Difficulty difficulty) {
+    private void showColorSelection(Stage stage, Difficulty difficulty) {
+        Label title = new Label("Choose Your Color");
+
+        Button whiteButton = new Button("White");
+        whiteButton.setPrefWidth(180);
+        whiteButton.setPrefHeight(40);
+        whiteButton.setOnAction(event -> startGame(stage, difficulty, Color.WHITE));
+        Button blackButton = new Button("Black");
+        blackButton.setPrefWidth(180);
+        blackButton.setPrefHeight(40);
+        blackButton.setOnAction(event -> startGame(stage, difficulty, Color.BLACK));
+
+        VBox colorBox = new VBox(10, whiteButton, blackButton);
+        colorBox.setAlignment(Pos.CENTER);
+        VBox root = new VBox(20, title, colorBox);
+        root.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(root, 400, 400);
+        stage.setTitle("Chess");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public void startGame(Stage stage, Difficulty difficulty, Color humanColor) {
         Game game = new Game();
         ChessBoardView boardView = new ChessBoardView(game);
         PromotionView promotionView = new PromotionView();
@@ -65,7 +89,8 @@ public class ChessApplication extends Application {
         BorderPane.setAlignment(clockView, Pos.CENTER);
         BorderPane.setAlignment(controlPanelView, Pos.CENTER);
 
-        new GameController(game, boardView, promotionView, gameOverView, clockView, difficulty, minutesPerSide, controlPanelView);
+        new GameController(game, boardView, promotionView, gameOverView, clockView,
+                difficulty, minutesPerSide, controlPanelView, humanColor);
         Scene scene = new Scene(root);
         stage.setTitle("Chess");
         stage.setScene(scene);
