@@ -18,6 +18,8 @@ public class Game {
     private Color winner = null;
     private boolean gameOver = false;
     private boolean timeoutLoss = false;
+    private boolean resigned = false;
+    private boolean drawnGame = false;
 
     public Game() {
         board = new Board();
@@ -154,11 +156,48 @@ public class Game {
         checkGameOver();
     }
 
+    // Counts the material advantage in a game
+    public int getMaterialBalance() {
+        int balance = 0;
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                Piece piece = board.getPiece(row, col);
+                if (piece == null) continue;
+                int value = pieceValue(piece);
+                balance += (piece.getColor() == Color.WHITE) ? value : -value;
+            }
+        }
+        return balance;
+    }
+
+    private int pieceValue(Piece piece) {
+        if (piece instanceof Pawn) return 1;
+        if (piece instanceof Knight) return 3;
+        if (piece instanceof Bishop) return 3;
+        if (piece instanceof Rook) return 5;
+        if (piece instanceof Queen) return 9;
+        return 0; // King
+    }
+
     public void loseOnTime(Color colorThatRanOut) {
         if (gameOver) return;
         gameOver = true;
         timeoutLoss = true;
         winner = (colorThatRanOut == Color.WHITE) ? Color.BLACK : Color.WHITE;
+    }
+
+    public void resign(Color resigningColor) {
+        if (gameOver) return;
+        gameOver = true;
+        resigned = true;
+        winner = (resigningColor == Color.WHITE) ? Color.BLACK : Color.WHITE;
+    }
+
+    public void declareDraw() {
+        if (gameOver) return;
+        gameOver = true;
+        drawnGame = true;
+        winner = null;
     }
 
     private void checkGameOver() {
@@ -266,6 +305,8 @@ public class Game {
     public int getPromotionCol() { return promotionCol; }
     public boolean isGameOver() { return gameOver; }
     public boolean isTimeoutLoss() { return timeoutLoss; }
+    public boolean isResigned() { return resigned; }
+    public boolean isDrawnGame() { return drawnGame; }
     public Color getWinner() { return winner; }
     public Move getLastMove() { return lastMove; }
 }

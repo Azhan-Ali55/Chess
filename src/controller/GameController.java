@@ -25,6 +25,8 @@ public class GameController {
     private final Clock clock;
     private final ClockView clockView;
     private Timeline clockTimeline;
+    private final ControlPanelView controlPanelView;
+    private final Color humanColor;
     private int selectedRow = -1;
     private int selectedCol = -1;
     private boolean dragging = false;
@@ -33,13 +35,15 @@ public class GameController {
     private int pressRow = -1;
     private int pressCol = -1;
 
-    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView, Difficulty difficulty, ClockView clockView, int minutesPerSide) {
+    public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView, Difficulty difficulty, ClockView clockView, int minutesPerSide, ControlPanelView controlPanelView) {
         this.game = game;
         this.boardView = boardView;
         this.promotionView = promotionView;
         this.gameOverView = gameOverView;
         this.clockView = clockView;
         this.difficulty = difficulty;
+        this.controlPanelView = controlPanelView;
+        this.humanColor = (stockfishColor == Color.WHITE) ? Color.BLACK : Color.WHITE;
 
         clock = new Clock(minutesPerSide);
         clockView.update(clock);
@@ -56,6 +60,7 @@ public class GameController {
         setupPromotionHandlers();
         setupBoardClickHandlers();
         setupClock();
+        setupControlButtons();
     }
 
     private void setupBoardClickHandlers() {
@@ -178,6 +183,11 @@ public class GameController {
             refreshBoard();
             handleGameOver();
         }
+    }
+
+    private void setupControlButtons() {
+        controlPanelView.getResignButton().setOnAction(event -> handleResign());
+        controlPanelView.getOfferDrawButton().setOnAction(event -> handleOfferDraw());
     }
 
     private void handleDragMove(int toRow, int toCol) {
@@ -427,12 +437,42 @@ public class GameController {
     }
 
     private void handleGameOver() {
-        if (game.getWinner() != null) {
+        clockTimeline.stop();
+        controlPanelView.setButtonDisabled(true);
+        if (game.isResigned()) {
+            gameOverView.showResignation(game.getWinner());
+        } else if (game.isDrawnGame()) {
+            gameOverView.showDraw();
+        } else if (game.getWinner() != null) {
             SoundManager.playCheckmateSound();
             gameOverView.showCheckmate(game.getWinner());
         } else {
             gameOverView.showStalemate();
         }
+    }
+
+    private void handleOfferDraw() {
+        if (game.isGameOver() || game.isPromotionPending()) return;
+        int balance = game.getMaterialBalance();
+        int balanceFromHumanPerspective = (humanColor == Color.WHITE) ? balance : -balance;
+
+        // Stockfish "accepts" only if material is roughly even.
+        boolean accepted = Math.abs(balanceFromHumanPerspective) <= 2;
+
+        if (accepted) {
+            game.declareDraw();
+            refreshBoard();
+            handleGameOver();
+        } else {
+            System.out.println("Stockfish declines the draw offer.");
+        }
+    }
+
+    private void handleResign() {
+        if (game.isGameOver() || game.isPromotionPending()) return;
+        game.resign(humanColor);
+        refreshBoard();
+        handleGameOver();
     }
 
     private void refreshBoard() {

@@ -28,6 +28,16 @@ public class GameOverView extends VBox {
         setVisible(true);
     }
 
+    public void showResignation(Color winner) {
+        resultLabel.setText(winner + " wins by resignation");
+        setVisible(true);
+    }
+
+    public void showDraw() {
+        resultLabel.setText("Draw agreed");
+        setVisible(true);
+    }
+
     public Button getNewGameButton() {
         return newGameButton;
     }

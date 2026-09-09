@@ -51,6 +51,7 @@ public class ChessApplication extends Application {
         GameOverView gameOverView = new GameOverView();
         gameOverView.setVisible(false);
         ClockView clockView = new ClockView();
+        ControlPanelView controlPanelView = new ControlPanelView();
         int minutesPerSide = 1;
         StackPane boardStack = new StackPane();
         boardStack.getChildren().addAll(boardView, promotionView, gameOverView);
@@ -58,11 +59,13 @@ public class ChessApplication extends Application {
 
         // Clock sits above the board, not overlapping it
         BorderPane root = new BorderPane();
-        BorderPane.setAlignment(clockView, Pos.CENTER);
         root.setTop(clockView);
         root.setCenter(boardStack);
+        root.setRight(controlPanelView);
+        BorderPane.setAlignment(clockView, Pos.CENTER);
+        BorderPane.setAlignment(controlPanelView, Pos.CENTER);
 
-        new GameController(game, boardView, promotionView, gameOverView, difficulty, clockView, minutesPerSide);
+        new GameController(game, boardView, promotionView, gameOverView, difficulty, clockView, minutesPerSide, controlPanelView);
         Scene scene = new Scene(root);
         stage.setTitle("Chess");
         stage.setScene(scene);
