@@ -3,19 +3,29 @@ package ui;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import model.Color;
 
-public class GameOverView extends VBox {
+public class GameOverView extends StackPane {
     private final Label resultLabel;
     private final Button newGameButton;
 
     public GameOverView() {
-        setSpacing(15);
+        getStyleClass().add("game-over-overlay");
         setAlignment(Pos.CENTER);
+
         resultLabel = new Label();
+        resultLabel.getStyleClass().add("result-label");
+
         newGameButton = new Button("New Game");
-        getChildren().addAll(resultLabel, newGameButton);
+        newGameButton.setPrefWidth(160);
+
+        VBox card = new VBox(resultLabel, newGameButton);
+        card.getStyleClass().add("game-over-card");
+        card.setAlignment(Pos.CENTER);
+
+        getChildren().add(card);
     }
 
     public void showCheckmate(Color winner) {

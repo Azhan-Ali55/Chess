@@ -14,10 +14,14 @@ import model.Difficulty;
 import model.Game;
 import controller.GameController;
 
+
 public class ChessApplication extends Application {
+    private static final String STYLESHEET = "/styles/chess.css";
+
     @Override
     public void start(Stage stage) {
         Label title = new Label("Choose Difficulty");
+        title.getStyleClass().add("title-label");
 
         VBox difficultyBox = new VBox(10);
         difficultyBox.setAlignment(Pos.CENTER);
@@ -26,31 +30,23 @@ public class ChessApplication extends Application {
             Button button = new Button(difficulty.name());
             button.setPrefWidth(180);
             button.setPrefHeight(40);
-            button.setOnAction(event -> {
-                showColorSelection(stage, difficulty);;
-            });
-
+            button.setOnAction(event -> showColorSelection(stage, difficulty));
             difficultyBox.getChildren().add(button);
         }
 
-        VBox root = new VBox(20);
+        VBox root = new VBox(20, title, difficultyBox);
         root.setAlignment(Pos.CENTER);
-
-        root.getChildren().addAll(title, difficultyBox);
-
-        Scene scene = new Scene(root, 400, 400);
-        stage.setTitle("Chess");
-        stage.setScene(scene);
-        stage.show();
+        showScene(stage, root, 400, 400);
     }
 
     private void showColorSelection(Stage stage, Difficulty difficulty) {
         Label title = new Label("Choose Your Color");
-
+        title.getStyleClass().add("title-label");
         Button whiteButton = new Button("White");
         whiteButton.setPrefWidth(180);
         whiteButton.setPrefHeight(40);
         whiteButton.setOnAction(event -> showTimeSelection(stage, difficulty, Color.WHITE));
+
         Button blackButton = new Button("Black");
         blackButton.setPrefWidth(180);
         blackButton.setPrefHeight(40);
@@ -58,17 +54,16 @@ public class ChessApplication extends Application {
 
         VBox colorBox = new VBox(10, whiteButton, blackButton);
         colorBox.setAlignment(Pos.CENTER);
+
         VBox root = new VBox(20, title, colorBox);
         root.setAlignment(Pos.CENTER);
 
-        Scene scene = new Scene(root, 400, 400);
-        stage.setTitle("Chess");
-        stage.setScene(scene);
-        stage.show();
+        showScene(stage, root, 400, 400);
     }
 
     private void showTimeSelection(Stage stage, Difficulty difficulty, Color humanColor) {
         Label title = new Label("Choose Time Control");
+        title.getStyleClass().add("title-label");
 
         int[] options = {1, 3, 5, 10, 15, 30};
         VBox timeBox = new VBox(10);
@@ -84,12 +79,7 @@ public class ChessApplication extends Application {
 
         VBox root = new VBox(20, title, timeBox);
         root.setAlignment(Pos.CENTER);
-
-        Scene scene = new Scene(root, 400, 400);
-        stage.setTitle("Chess");
-        stage.setScene(scene);
-        stage.setMaximized(true);
-        stage.show();
+        showScene(stage, root, 400, 400);
     }
 
     public void startGame(Stage stage, Difficulty difficulty, Color humanColor, int minutesPerSide) {
@@ -102,11 +92,16 @@ public class ChessApplication extends Application {
         ControlPanelView controlPanelView = new ControlPanelView();
         PlayerInfoView whitePanel = new PlayerInfoView("White");
         PlayerInfoView blackPanel = new PlayerInfoView("Black");
+
         StackPane boardStack = new StackPane();
         boardStack.getChildren().addAll(boardView, promotionView, gameOverView);
         StackPane.setAlignment(promotionView, Pos.TOP_LEFT);
 
-        // Setting time and material count for each player
+        // Frame the board with padding + shadow so it doesn't float bare in a big window
+        StackPane boardWrapper = new StackPane(boardStack);
+        boardWrapper.getStyleClass().add("board-wrapper");
+        boardWrapper.setMaxSize(StackPane.USE_PREF_SIZE, StackPane.USE_PREF_SIZE);
+
         BorderPane root = new BorderPane();
         if (humanColor == Color.WHITE) {
             root.setTop(blackPanel);
@@ -115,12 +110,20 @@ public class ChessApplication extends Application {
             root.setTop(whitePanel);
             root.setBottom(blackPanel);
         }
-        root.setCenter(boardStack);
+        BorderPane.setAlignment(blackPanel, Pos.CENTER);
+        BorderPane.setAlignment(whitePanel, Pos.CENTER);
+        root.setCenter(boardWrapper);
         root.setRight(controlPanelView);
 
-        new GameController(game, boardView, promotionView, gameOverView, difficulty, minutesPerSide, controlPanelView,
+        new GameController(game, boardView, promotionView, gameOverView, difficulty, minutesPerSide,controlPanelView,
                 whitePanel, blackPanel, humanColor);
-        Scene scene = new Scene(root);
+
+        showScene(stage, root, 900, 900);
+    }
+
+    private void showScene(Stage stage, javafx.scene.Parent root, double width, double height) {
+        Scene scene = new Scene(root, width, height);
+        scene.getStylesheets().add(getClass().getResource(STYLESHEET).toExternalForm());
         stage.setTitle("Chess");
         stage.setScene(scene);
         stage.setMaximized(true);

@@ -9,8 +9,13 @@ public class ControlPanelView extends VBox {
     private final Button offerDrawButton = new Button("Offer Draw");
 
     public ControlPanelView() {
+        getStyleClass().add("control-panel");
         setSpacing(10);
         setAlignment(Pos.CENTER);
+
+        resignButton.getStyleClass().add("resign-button");
+        offerDrawButton.getStyleClass().add("draw-button");
+
         resignButton.setPrefWidth(140);
         offerDrawButton.setPrefWidth(140);
         getChildren().addAll(resignButton, offerDrawButton);

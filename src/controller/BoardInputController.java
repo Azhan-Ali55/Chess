@@ -84,8 +84,8 @@ public class BoardInputController {
                         boardView.stopDragging(pressRow, pressCol);
 
                         Point2D point = boardView.sceneToLocal(event.getSceneX(), event.getSceneY());
-                        int toCol = (int) (point.getX() / 80);
-                        int toRow = (int) (point.getY() / 80);
+                        int toCol = (int) (point.getX() / SquareView.SQUARE_SIZE);
+                        int toRow = (int) (point.getY() / SquareView.SQUARE_SIZE);
 
                         if (toRow >= 0 && toRow < 8 && toCol >= 0 && toCol < 8) {
                             attemptMove(toRow, toCol);

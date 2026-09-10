@@ -9,8 +9,8 @@ public class PieceView extends ImageView {
 
     public PieceView(Piece piece) {
         super(ImageLoader.loadPieceImage(piece));
-        setFitWidth(70);
-        setFitHeight(70);
+        setFitWidth(88);
+        setFitHeight(88);
         setPreserveRatio(true);
     }
 }

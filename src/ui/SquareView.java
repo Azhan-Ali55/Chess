@@ -7,6 +7,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 
 public class SquareView extends StackPane {
+    public static final int SQUARE_SIZE = 100;
     private final int row;
     private final int col;
     private Rectangle highlightOverlay;
@@ -18,7 +19,7 @@ public class SquareView extends StackPane {
     public SquareView(int row, int col) {
         this.row = row;
         this.col = col;
-        setPrefSize(80, 80);
+        setPrefSize(SQUARE_SIZE, SQUARE_SIZE);
         setBaseColor();
     }
 
@@ -32,14 +33,13 @@ public class SquareView extends StackPane {
 
     public void highlight() {
         clearHighlight();
-
         highlightOverlay = new Rectangle();
         highlightOverlay.widthProperty().bind(widthProperty());
         highlightOverlay.heightProperty().bind(heightProperty());
         highlightOverlay.setFill(Color.rgb(0, 0, 0, 0.08));
         highlightOverlay.setMouseTransparent(true);
 
-        moveDot = new Circle(9);
+        moveDot = new Circle(11);
         moveDot.setFill(Color.rgb(50, 50, 50, 0.45));
         moveDot.setMouseTransparent(true);
         StackPane.setAlignment(moveDot, Pos.CENTER);
@@ -49,11 +49,10 @@ public class SquareView extends StackPane {
 
     public void highlightCapture() {
         clearHighlight();
-
-        captureRing = new Circle(38);
+        captureRing = new Circle(46);
         captureRing.setFill(Color.TRANSPARENT);
         captureRing.setStroke(Color.rgb(50, 50, 50, 0.45));
-        captureRing.setStrokeWidth(7);
+        captureRing.setStrokeWidth(8);
         captureRing.setMouseTransparent(true);
 
         StackPane.setAlignment(captureRing, Pos.CENTER);
@@ -82,7 +81,7 @@ public class SquareView extends StackPane {
         lastMoveOverlay = new Rectangle();
         lastMoveOverlay.widthProperty().bind(widthProperty());
         lastMoveOverlay.heightProperty().bind(heightProperty());
-        lastMoveOverlay.setFill(Color.rgb(255, 255, 0, 0.25));
+        lastMoveOverlay.setFill(Color.rgb(255, 199, 44, 0.35));
         lastMoveOverlay.setMouseTransparent(true);
 
         getChildren().add(0, lastMoveOverlay);

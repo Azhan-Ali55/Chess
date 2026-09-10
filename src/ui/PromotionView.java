@@ -20,6 +20,7 @@ public class PromotionView extends HBox {
     private final Button knightButton;
 
     public PromotionView() {
+        getStyleClass().add("promotion-bar");
         setSpacing(5);
         setAlignment(Pos.CENTER);
 
@@ -32,12 +33,7 @@ public class PromotionView extends HBox {
         setPrefSize(BAR_WIDTH, BAR_HEIGHT);
         setMinSize(BAR_WIDTH, BAR_HEIGHT);
         setMaxSize(BAR_WIDTH, BAR_HEIGHT);
-        setStyle(
-                "-fx-background-color: #f0d9b5;" +
-                        "-fx-border-color: #333333;" +
-                        "-fx-border-width: 2;" +
-                        "-fx-padding: 5;"
-        );
+
         setButtonSize(queenButton);
         setButtonSize(rookButton);
         setButtonSize(bishopButton);
@@ -70,7 +66,9 @@ public class PromotionView extends HBox {
     }
 
     public void positionAt(int row, int col) {
-        double squareSize = 80;
+        double squareSize = SquareView.SQUARE_SIZE;
+        double boardWidth = squareSize * 8;
+
         double x = col * squareSize + (squareSize / 2) - (BAR_WIDTH / 2);
         double y;
 
@@ -87,7 +85,7 @@ public class PromotionView extends HBox {
         }
 
         // Keep the bar inside the board.
-        x = Math.max(0, Math.min(x, 640 - BAR_WIDTH));
+        x = Math.max(0, Math.min(x, boardWidth - BAR_WIDTH));
         setTranslateX(x);
         setTranslateY(y);
     }

@@ -11,26 +11,27 @@ public class PlayerInfoView extends HBox {
     private final Label materialLabel;
 
     public PlayerInfoView(String displayName) {
+        getStyleClass().add("player-panel");
         setSpacing(20);
         setAlignment(Pos.CENTER_LEFT);
         setPadding(new Insets(10));
 
         nameLabel = new Label(displayName);
-        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+        nameLabel.getStyleClass().add("player-name");
 
         clockLabel = new Label("0:00");
-        clockLabel.setStyle("-fx-font-size: 20px; -fx-font-family: 'Consolas';");
+        clockLabel.getStyleClass().add("player-clock");
 
         materialLabel = new Label("");
-        materialLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #2e7d32;");
+        materialLabel.getStyleClass().add("player-material");
 
         getChildren().addAll(nameLabel, clockLabel, materialLabel);
     }
 
     public void setClockText(String text, boolean active) {
         clockLabel.setText(text);
-        String base = "-fx-font-size: 20px; -fx-font-family: 'Consolas';";
-        clockLabel.setStyle(active ? base + " -fx-text-fill: #2e7d32; -fx-font-weight: bold;" : base);
+        clockLabel.getStyleClass().removeAll("player-clock", "player-clock-active");
+        clockLabel.getStyleClass().add(active ? "player-clock-active" : "player-clock");
     }
 
     public void setMaterialAdvantage(int advantage) {
