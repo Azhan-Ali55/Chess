@@ -99,24 +99,27 @@ public class ChessApplication extends Application {
         promotionView.setVisible(false);
         GameOverView gameOverView = new GameOverView();
         gameOverView.setVisible(false);
-        ClockView clockView = new ClockView();
         ControlPanelView controlPanelView = new ControlPanelView();
-        MaterialView materialView = new MaterialView();
+        PlayerInfoView whitePanel = new PlayerInfoView("White");
+        PlayerInfoView blackPanel = new PlayerInfoView("Black");
         StackPane boardStack = new StackPane();
         boardStack.getChildren().addAll(boardView, promotionView, gameOverView);
         StackPane.setAlignment(promotionView, Pos.TOP_LEFT);
 
-        // Clock sits above the board, not overlapping it
+        // Setting time and material count for each player
         BorderPane root = new BorderPane();
-        root.setTop(clockView);
+        if (humanColor == Color.WHITE) {
+            root.setTop(blackPanel);
+            root.setBottom(whitePanel);
+        } else {
+            root.setTop(whitePanel);
+            root.setBottom(blackPanel);
+        }
         root.setCenter(boardStack);
         root.setRight(controlPanelView);
-        root.setBottom(materialView);
-        BorderPane.setAlignment(clockView, Pos.CENTER);
-        BorderPane.setAlignment(controlPanelView, Pos.CENTER);
 
-        new GameController(game, boardView, promotionView, gameOverView, clockView,
-                difficulty, minutesPerSide, controlPanelView, materialView, humanColor);
+        new GameController(game, boardView, promotionView, gameOverView, difficulty, minutesPerSide, controlPanelView,
+                whitePanel, blackPanel, humanColor);
         Scene scene = new Scene(root);
         stage.setTitle("Chess");
         stage.setScene(scene);

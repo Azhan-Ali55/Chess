@@ -6,20 +6,22 @@ import javafx.util.Duration;
 import model.Clock;
 import model.Color;
 import model.Game;
-import ui.ClockView;
+import ui.PlayerInfoView;
 import java.util.function.Consumer;
 
 public class ClockController {
     private final Game game;
     private final Clock clock;
-    private final ClockView clockView;
+    private final PlayerInfoView whitePanel;
+    private final PlayerInfoView blackPanel;
     private Timeline timeline;
     private Consumer<Color> onTimeout;
 
-    public ClockController(Game game, Clock clock, ClockView clockView) {
+    public ClockController(Game game, Clock clock, PlayerInfoView whitePanel, PlayerInfoView blackPanel) {
         this.game = game;
         this.clock = clock;
-        this.clockView = clockView;
+        this.whitePanel = whitePanel;
+        this.blackPanel = blackPanel;
     }
 
     public void setOnTimeout(Consumer<Color> onTimeout) {
@@ -27,7 +29,7 @@ public class ClockController {
     }
 
     public void start() {
-        clockView.update(clock);
+        updatePanels();
         timeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> tick()));
         timeline.setCycleCount(Timeline.INDEFINITE);
         clock.start(Color.WHITE);
@@ -37,7 +39,7 @@ public class ClockController {
     private void tick() {
         if (game.isGameOver() || game.isPromotionPending()) return;
         boolean timedOut = clock.tick();
-        clockView.update(clock);
+        updatePanels();
 
         if (timedOut) {
             Color colorThatRanOut = clock.getActiveColor();
@@ -46,9 +48,16 @@ public class ClockController {
         }
     }
 
+    private void updatePanels() {
+        whitePanel.setClockText(Clock.formatTime(clock.getWhiteSecondsLeft()),
+                clock.getActiveColor() == Color.WHITE && clock.isRunning());
+        blackPanel.setClockText(Clock.formatTime(clock.getBlackSecondsLeft()),
+                clock.getActiveColor() == Color.BLACK && clock.isRunning());
+    }
+
     public void switchTo(Color color) {
         clock.switchTo(color);
-        clockView.update(clock);
+        updatePanels();
     }
 
     public void stop() {

@@ -10,7 +10,8 @@ public class GameController {
     private final PromotionView promotionView;
     private final GameOverView gameOverView;
     private final ControlPanelView controlPanelView;
-    private final MaterialView materialView;
+    private final PlayerInfoView whitePanel;
+    private final PlayerInfoView blackPanel;
     private final Color stockfishColor;
     private final Color humanColor;
     private final int stockfishThinkTime = 3000;
@@ -20,21 +21,22 @@ public class GameController {
     private final ClockController clockController;
 
     public GameController(Game game, ChessBoardView boardView, PromotionView promotionView, GameOverView gameOverView,
-                          ClockView clockView, Difficulty difficulty, int minutesPerSide, ControlPanelView controlPanelView,
-                          MaterialView materialView, Color humanColor) {
+                          Difficulty difficulty, int minutesPerSide, ControlPanelView controlPanelView, PlayerInfoView whitePanel,
+                          PlayerInfoView blackPanel, Color humanColor) {
         this.game = game;
         this.boardView = boardView;
         this.promotionView = promotionView;
         this.gameOverView = gameOverView;
         this.controlPanelView = controlPanelView;
-        this.materialView = materialView;
+        this.whitePanel = whitePanel;
+        this.blackPanel = blackPanel;
         this.humanColor = humanColor;
         this.stockfishColor = (humanColor == Color.WHITE) ? Color.BLACK : Color.WHITE;
 
         highlightController = new HighlightController(game, boardView);
         stockfishController = new StockfishController(game, difficulty, stockfishThinkTime);
         Clock clock = new Clock(minutesPerSide);
-        clockController = new ClockController(game, clock, clockView);
+        clockController = new ClockController(game, clock, whitePanel, blackPanel);
         clockController.setOnTimeout(this::handleTimeout);
         boardInputController = new BoardInputController(game, boardView, highlightController);
         boardInputController.setOnMoveAttempted(this::attemptMove);
@@ -187,6 +189,8 @@ public class GameController {
 
     private void refreshBoard() {
         boardView.refresh();
-        materialView.update(game.getMaterialBalance());
+        int balance = game.getMaterialBalance();
+        whitePanel.setMaterialAdvantage(Math.max(balance, 0));
+        blackPanel.setMaterialAdvantage(Math.max(-balance, 0));
     }
 }
