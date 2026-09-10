@@ -50,11 +50,11 @@ public class ChessApplication extends Application {
         Button whiteButton = new Button("White");
         whiteButton.setPrefWidth(180);
         whiteButton.setPrefHeight(40);
-        whiteButton.setOnAction(event -> startGame(stage, difficulty, Color.WHITE));
+        whiteButton.setOnAction(event -> showTimeSelection(stage, difficulty, Color.WHITE));
         Button blackButton = new Button("Black");
         blackButton.setPrefWidth(180);
         blackButton.setPrefHeight(40);
-        blackButton.setOnAction(event -> startGame(stage, difficulty, Color.BLACK));
+        blackButton.setOnAction(event -> showTimeSelection(stage, difficulty, Color.BLACK));
 
         VBox colorBox = new VBox(10, whiteButton, blackButton);
         colorBox.setAlignment(Pos.CENTER);
@@ -67,7 +67,32 @@ public class ChessApplication extends Application {
         stage.show();
     }
 
-    public void startGame(Stage stage, Difficulty difficulty, Color humanColor) {
+    private void showTimeSelection(Stage stage, Difficulty difficulty, Color humanColor) {
+        Label title = new Label("Choose Time Control");
+
+        int[] options = {1, 3, 5, 10, 15, 30};
+        VBox timeBox = new VBox(10);
+        timeBox.setAlignment(Pos.CENTER);
+
+        for (int minutes : options) {
+            Button button = new Button(minutes + " min");
+            button.setPrefWidth(180);
+            button.setPrefHeight(40);
+            button.setOnAction(event -> startGame(stage, difficulty, humanColor, minutes));
+            timeBox.getChildren().add(button);
+        }
+
+        VBox root = new VBox(20, title, timeBox);
+        root.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(root, 400, 400);
+        stage.setTitle("Chess");
+        stage.setScene(scene);
+        stage.setMaximized(true);
+        stage.show();
+    }
+
+    public void startGame(Stage stage, Difficulty difficulty, Color humanColor, int minutesPerSide) {
         Game game = new Game();
         ChessBoardView boardView = new ChessBoardView(game);
         PromotionView promotionView = new PromotionView();
@@ -77,7 +102,6 @@ public class ChessApplication extends Application {
         ClockView clockView = new ClockView();
         ControlPanelView controlPanelView = new ControlPanelView();
         MaterialView materialView = new MaterialView();
-        int minutesPerSide = 1;
         StackPane boardStack = new StackPane();
         boardStack.getChildren().addAll(boardView, promotionView, gameOverView);
         StackPane.setAlignment(promotionView, Pos.TOP_LEFT);
@@ -96,6 +120,7 @@ public class ChessApplication extends Application {
         Scene scene = new Scene(root);
         stage.setTitle("Chess");
         stage.setScene(scene);
+        stage.setMaximized(true);
         stage.show();
     }
 
